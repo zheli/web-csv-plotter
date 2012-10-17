@@ -3,7 +3,7 @@ web-csv-plotter
 
 A simple tool I made at work, plot data from local csv file onto an interactive HTML5 chart.
 
-![Screenshot](https://raw.github.com/zheli/web-csv-plotter/master/screenshot.png "Screenshot")
+[![Screenshot](https://raw.github.com/zheli/web-csv-plotter/master/screenshot.png "Screenshot")]
 
 Introduction
 ===============
