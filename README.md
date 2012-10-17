@@ -3,6 +3,8 @@ web-csv-plotter
 
 A simple tool I made at work, plot data from local csv file onto an interactive HTML5 chart.
 
+![Screenshot](https://raw.github.com/zheli/web-csv-plotter/master/screenshot.png "Screenshot")
+
 Introduction
 ===============
 It is still very simple, but it works for me. I don't have to manually plot csv data into Excel anymore.
