@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>    
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title></title>
+        <style>
+			body { font-family: Calibri, Arial, sans-serif; }
+			#table td, th  { border: 1px solid #aaf; padding: 1px 5px; width: 10em; }
+			#table th      { background-color: #ccf; }
+			#table input   { width: 100%; margin: 0; padding:0; border: 0; }
+			#table table   { border-collapse: collapse; }
+			#url { width: 20em; }
+			</style>
+        <link rel="stylesheet" href="{{ STATIC_URL }}style.css" type="text/css">
+        <!--<script src="data.js" type="text/javascript"></script>-->
+    </head>
+    <body>
+    	<div id="input_box">
+    		<form action="/" method="post">{% csrf_token %}
+    		filename: <input type="text" id="filename" name="filename" value="{{filename}}" size=120 /><br>
+    		<select id="filename_option" name="filename_option">
+    			{% for file in file_list %}
+    			<option value="{{ file }}">{{ file }}</option>
+    			{% endfor %}
+    		</select>
+    		<input type="submit" id="submit" value="Submit" />
+    	</form>
+    	</div>
+    	<div id="chartdiv" style="width: 100%; height: 600px;"><div id="status"><img src="{{ STATIC_URL }}images/loading.gif" /></div></div>
+        <div id="chartdiv" style="margin-left:35px;">
+            <input type="radio" checked="true" name="group" id="rb1" onclick="setPanSelect()">Select
+            <input type="radio" name="group" id="rb2" onclick="setPanSelect()">Pan
+		</div>
+    	<div id="table" align="center"></div>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+        <script src="{{ STATIC_URL }}jquery.csv.min.js"></script>
+        <script src="http://js-tables.googlecode.com/svn/trunk/jquery.table.js"></script>
+        <script src="{{ STATIC_URL }}amcharts.js" type="text/javascript"></script>        
+        <script>
+        	var chart;
+        	var chartData = [];
+        	var dataSets;
+        	var dataSets_2;
+        	var chartCursor;
+
+			//for(var n=0; n<5; n++){				chartData.push({					number: n,					arc_current: n,		arc_voltage: n				});			}
+
+        		    function getChart(filename) {
+        			//alert(chartData);
+        			//GET DATA
+        			$.getJSON("/csv_data/?filename="+filename, function(data) {
+        				
+		    			dataSets = $.csv()(data['data']);
+
+		    			$.getJSON("/csv_data_WPS/", function(data) {
+		    				dataSets_2 = $.csv()(data['data']);
+	
+			    			for (var n=1;n<dataSets.length;n++)
+			    			//for (var n=1;n<5;n++)
+			    			{
+			            		chartData.push({
+				            		number: dataSets[n][0],
+				            		arc_current: dataSets[n][1],
+				            		arc_voltage: dataSets[n][2],
+				            		arc_current_WPS: dataSets_2[n][1],
+				            		arc_voltage_WPS: dataSets_2[n][2]
+				            	});
+			    			}
+
+		    				$('#table').table(dataSets);
+
+		    			    // SERIAL CHART    
+				            chart = new AmCharts.AmSerialChart();
+				            chart.pathToImages = "{{ STATIC_URL }}images/";
+				            chart.zoomOutButton = {
+				                backgroundColor: '#000000',
+				                backgroundAlpha: 0.15
+				            };
+				            chart.dataProvider = chartData;
+				            chart.categoryField = "number";
+
+				            // listen for "dataUpdated" event (fired when chart is rendered) and call zoomChart method when it happens
+				            chart.addListener("dataUpdated", zoomChart);
+
+				            // AXES
+				            // category
+				            var categoryAxis = chart.categoryAxis;
+				            categoryAxis.parseDates = false; // as our data is date-based, we set parseDates to true
+				            categoryAxis.minPeriod = "FFF"; // our data is daily, so we set minPeriod to DD
+				            categoryAxis.dashLength = 1;
+				            categoryAxis.gridAlpha = 0.15;
+				            categoryAxis.axisColor = "#DADADA";
+				            categoryAxis.title = "time (ms)";
+
+				            // value                
+				            var valueAxis = new AmCharts.ValueAxis();
+				            valueAxis.title = "value";
+				            valueAxis.axisAlpha = 0.2;
+				            valueAxis.dashLength = 1;
+				            chart.addValueAxis(valueAxis);
+
+				            // GRAPH
+				            var graph = new AmCharts.AmGraph();
+				            graph.title = "arc current";
+				            graph.valueField = "arc_current";
+				            graph.bullet = "round";
+				            graph.bulletBorderColor = "#FF6600";
+				            graph.bulletBorderThickness = 2;
+				            graph.lineThickness = 2;
+				            graph.lineColor = "#b5030d";
+				            graph.negativeLineColor = "#0352b5";
+				            graph.hideBulletsCount = 50; // this makes the chart to hide bullets when there are more than 50 series in selection
+				            chart.addGraph(graph);
+				            
+				            // GRAPH 2
+				            var graph2 = new AmCharts.AmGraph();
+				            graph2.title = "arc voltage";
+				            graph2.valueField = "arc_voltage";
+				            graph2.bullet = "round";
+				            graph2.bulletBorderColor = "##FCD202";
+				            graph2.bulletBorderThickness = 2;
+				            graph2.lineThickness = 2;
+				            graph2.lineColor = "black";
+				            graph2.negativeLineColor = "#0352b5";
+				            graph2.hideBulletsCount = 50; // this makes the chart to hide bullets when there are more than 50 series in selection
+				            chart.addGraph(graph2);
+				            
+				            // GRAPH WPS
+				            var graph_WPS = new AmCharts.AmGraph();
+				            graph_WPS.title = "arc current WPS";
+				            graph_WPS.valueField = "arc_current_WPS";
+				            graph_WPS.bullet = "round";
+				            graph_WPS.bulletBorderColor = "green";
+				            graph_WPS.bulletBorderThickness = 2;
+				            graph_WPS.lineThickness = 2;
+				            //graph_WPS.lineColor = "#b5030d";
+				            //graph_WPS.negativeLineColor = "#0352b5";
+				            graph_WPS.hideBulletsCount = 50; // this makes the chart to hide bullets when there are more than 50 series in selection
+
+				            // GRAPH WPS 2
+				            var graph_WPS_2 = new AmCharts.AmGraph();
+				            graph_WPS_2.title = "arc voltage WPS";
+				            graph_WPS_2.valueField = "arc_voltage_WPS";
+				            graph_WPS_2.bullet = "round";
+				            graph_WPS_2.bulletBorderColor = "blue";
+				            graph_WPS_2.bulletBorderThickness = 2;
+				            graph_WPS_2.lineThickness = 2;
+				            //graph_WPS_2.lineColor = "blue";
+				            //graph_WPS_2.negativeLineColor = "#0352b5";
+				            graph_WPS_2.hideBulletsCount = 50; // this makes the chart to hide bullets when there are more than 50 series in selection
+				            //chart.addGraph(graph_WPS);
+				            //chart.addGraph(graph_WPS_2);
+							
+				            // CURSOR
+				            chartCursor = new AmCharts.ChartCursor();
+				            chartCursor.cursorPosition = "mouse";
+				            chart.addChartCursor(chartCursor);
+
+				            // SCROLLBAR
+				            var chartScrollbar = new AmCharts.ChartScrollbar();
+				            chartScrollbar.graph = graph;
+				            chartScrollbar.scrollbarHeight = 40;
+				            chartScrollbar.color = "#FFFFFF";
+				            chartScrollbar.autoGridCount = true;
+				            chart.addChartScrollbar(chartScrollbar);
+
+				            // LEGEND
+			                var legend = new AmCharts.AmLegend();
+			                legend.marginLeft = 110;
+			                chart.addLegend(legend);
+
+				            $("#status").replaceWith("");
+				            //        			alert(chartData);
+
+				            // WRITE
+				            chart.write("chartdiv");
+
+		    			});
+			   		});
+			}
+
+        	$(function() {
+        		AmCharts.ready( function() {
+        			getChart("{{filename}}");
+        		});
+        	});
+            // this method is called when chart is first inited as we listen for "dataUpdated" event
+            function zoomChart() {
+                // different zoom methods can be used - zoomToIndexes, zoomToDates, zoomToCategoryValues
+                //chart.zoomToIndexes(chartData.length - 40, chartData.length - 1);
+                chart.zoomToIndexes(0, chartData.length);
+            }
+            
+            // changes cursor mode from pan to select
+            function setPanSelect() {
+                if (document.getElementById("rb1").checked) {
+                    chartCursor.pan = false;
+                    chartCursor.zoomable = true;
+                    
+                } else {
+                    chartCursor.pan = true;
+                }
+                chart.validateNow();
+            }
+
+
+
+
+
+        </script>
+    </body>
+</html>
