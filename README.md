@@ -9,8 +9,8 @@ It is still very simple, but it works for me. I don't have to manually plot csv 
 
 Prerequisites
 ===============
--Python
--Django
+* Python
+* Django
 
 How to run it
 ===============
