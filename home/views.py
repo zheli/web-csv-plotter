@@ -53,7 +53,7 @@ def csv_data(request):
 def csv_data_WPS(request):
 	response_data = { 'data' : '' }
 
-	with open('C:\\log_WPS__SYSTEM__GOUGING__Change_Voltage_While_Welding.csv') as f:
+	with open('C:\\log_PS1__SYSTEM__GMA__ArcOut.csv') as f:
 		logging.debug('getting csv file content')
 		while True:
 			line = f.readline()
