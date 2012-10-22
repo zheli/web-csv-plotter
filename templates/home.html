@@ -16,13 +16,27 @@
     </head>
     <body>
     	<div id="input_box">
-    		<form action="/" method="post">{% csrf_token %}
-    		filename: <input type="text" id="filename" name="filename" value="{{filename}}" size=120 /><br>
+    		{% if compare_log %}
+    		<form action="{% url home %}" method="post">
+    			{% else %}
+    		<form action="{% url log-view %}" method="post">    		
+    		{% endif%}
+    		{% csrf_token %}
     		<select id="filename_option" name="filename_option">
     			{% for file in file_list %}
     			<option value="{{ file }}">{{ file }}</option>
     			{% endfor %}
     		</select>
+    		filename: <input type="text" id="filename" name="filename" value="{{filename}}" size=120 /><br>
+    		{% if compare_log %}
+    		V.S.<br>
+    		<select id="filename_ref_option" name="filename_ref_option">
+    			{% for file in file_list %}
+    			<option value="{{ file }}">{{ file }}</option>
+    			{% endfor %}
+    		</select>
+    		reference filename: <input type="text" id="filename_ref" name="filename_ref" value="{{filename_ref}}" size=120 /><br>
+    		{% endif %}
     		<input type="submit" id="submit" value="Submit" />
     	</form>
     	</div>
@@ -48,22 +62,27 @@
         		    function getChart(filename) {
         			//alert(chartData);
         			//GET DATA
-        			$.getJSON("/csv_data/?filename="+filename, function(data) {
+        			$.getJSON("/csv_data?filename="+filename, function(data) {
         				
 		    			dataSets = $.csv()(data['data']);
-
-		    			$.getJSON("/csv_data_WPS/", function(data) {
+		    			{% if compare_log %}
+		    			$.getJSON("/csv_data_WPS?filename="+filename, function(data) {
 		    				dataSets_2 = $.csv()(data['data']);
-	
+		    			{% endif %}
+
 			    			for (var n=1;n<dataSets.length;n++)
 			    			//for (var n=1;n<5;n++)
 			    			{
 			            		chartData.push({
 				            		number: dataSets[n][0],
 				            		arc_current: dataSets[n][1],
+		    				{% if compare_log %}
 				            		arc_voltage: dataSets[n][2],
 				            		arc_current_WPS: dataSets_2[n][1],
 				            		arc_voltage_WPS: dataSets_2[n][2]
+				            {% else %}
+				            		arc_voltage: dataSets[n][2]				            
+				            {% endif %}
 				            	});
 			    			}
 
@@ -124,10 +143,12 @@
 				            graph2.negativeLineColor = "#0352b5";
 				            graph2.hideBulletsCount = 50; // this makes the chart to hide bullets when there are more than 50 series in selection
 				            chart.addGraph(graph2);
+
 				            
+				            {% if compare_log %}
 				            // GRAPH WPS
 				            var graph_WPS = new AmCharts.AmGraph();
-				            graph_WPS.title = "arc current WPS";
+				            graph_WPS.title = "arc current reference";
 				            graph_WPS.valueField = "arc_current_WPS";
 				            graph_WPS.bullet = "round";
 				            graph_WPS.bulletBorderColor = "green";
@@ -139,7 +160,7 @@
 
 				            // GRAPH WPS 2
 				            var graph_WPS_2 = new AmCharts.AmGraph();
-				            graph_WPS_2.title = "arc voltage WPS";
+				            graph_WPS_2.title = "arc voltage reference";
 				            graph_WPS_2.valueField = "arc_voltage_WPS";
 				            graph_WPS_2.bullet = "round";
 				            graph_WPS_2.bulletBorderColor = "blue";
@@ -147,10 +168,11 @@
 				            graph_WPS_2.lineThickness = 2;
 				            //graph_WPS_2.lineColor = "blue";
 				            //graph_WPS_2.negativeLineColor = "#0352b5";
-				            graph_WPS_2.hideBulletsCount = 50; // this makes the chart to hide bullets when there are more than 50 series in selection
+				            graph_WPS_2.hideBulletsCount = 50; // this makes the chart to hide bullets when there are more than 50 series in selectio
 				            chart.addGraph(graph_WPS);
 				            chart.addGraph(graph_WPS_2);
-							
+				            {% endif %}
+
 				            // CURSOR
 				            chartCursor = new AmCharts.ChartCursor();
 				            chartCursor.cursorPosition = "mouse";
@@ -174,8 +196,9 @@
 
 				            // WRITE
 				            chart.write("chartdiv");
-
+				        {% if compare_log %}
 		    			});
+						{% endif %}
 			   		});
 			}
 

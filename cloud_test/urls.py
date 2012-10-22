@@ -6,8 +6,9 @@ from django.conf.urls import patterns, include, url
 
 urlpatterns = patterns('',
 	url(r'^$', 'home.views.home', name = 'home'),
-	url(r'^csv_data/$', 'home.views.csv_data', name = 'csv-data'),
-	url(r'^csv_data_WPS/$', 'home.views.csv_data_WPS', name = 'csv-data-WPS'),
+    url(r'^log_view$', 'home.views.log_view', name = 'log-view'),
+	url(r'^csv_data$', 'home.views.csv_data', name = 'csv-data'),
+	url(r'^csv_data_WPS$', 'home.views.csv_data_WPS', name = 'csv-data-WPS'),
     # Examples:
     # url(r'^$', 'cloud_test.views.home', name='home'),
     # url(r'^cloud_test/', include('cloud_test.foo.urls')),
