@@ -18,9 +18,9 @@ def home(request):
 		if not filename:
 			filename = 'log_WPS__SYSTEM__GOUGING__Change_Voltage_While_Welding.csv'
 	elif request.method == 'POST':
-		filename = request.POST.get('filename', '')
-		filename_ref = request.POST.get('filename_ref', '')
-		filename_option = request.POST.get('filename_option', '')
+		#filename = request.POST.get('filename', '')
+		filename = request.POST.get('filename_option', '')
+		filename_ref = request.POST.get('filename_ref_option', '')
 
 	if filename[-3:] != 'csv':
 		filename = filename + '.csv'
@@ -37,8 +37,8 @@ def home(request):
 		if fname[-3:] == 'csv':
 			ref_file_list.append(fname)
 
-	if filename_option:
-		filename = filename_option
+	#if filename_option:
+	#	filename = filename_option
 
 	params = { 
 		'filename': filename,

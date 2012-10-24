@@ -40,6 +40,7 @@
     		<input type="submit" id="submit" value="Submit" />
     	</form>
     	</div>
+    	<div id="content"></div>
     	<div id="chartdiv" style="width: 100%; height: 600px;"><div id="status"><img src="{{ STATIC_URL }}images/loading.gif" /></div></div>
         <div id="chartdiv" style="margin-left:35px;">
             <input type="radio" checked="true" name="group" id="rb1" onclick="setPanSelect()">Select
@@ -206,6 +207,16 @@
         		AmCharts.ready( function() {
         			getChart();
         		});
+        		var current_url = window.location.href;
+        		if (current_url[current_url.length-1] != "v")
+        			{% if compare_log %}
+        			current_url+="?filename={{filename}}&filename_ref={{filename_ref}}";
+        			{% else %}
+        			current_url+="?filename={{filename}}";
+        			{% endif %}
+
+        		$("#content").replaceWith("Current graph: <a href='"+current_url+"'>"+current_url+"</a>");
+        		$("#current_url").attr("href", window.location.href);
         	});
             // this method is called when chart is first inited as we listen for "dataUpdated" event
             function zoomChart() {
@@ -225,11 +236,6 @@
                 }
                 chart.validateNow();
             }
-
-
-
-
-
         </script>
     </body>
 </html>
