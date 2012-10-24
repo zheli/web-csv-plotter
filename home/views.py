@@ -6,7 +6,7 @@ from django.http import HttpResponse
 from django.template  import RequestContext
 from django.shortcuts import render_to_response
 
-SRC_PATH = os.path.join("C:\\", "dev")
+SRC_PATH = os.path.join("C:\\")
 DATA_FOLDER = os.path.join(SRC_PATH, "Logfiles")
 REF_FOLDER = os.path.join(SRC_PATH, "ReferenceLogs")
 
@@ -30,6 +30,12 @@ def home(request):
 	for fname in dir_list:
 		if fname[-3:] == 'csv':
 			file_list.append(fname)
+	
+	dir_list = os.listdir(REF_FOLDER)
+	ref_file_list = []
+	for fname in dir_list:
+		if fname[-3:] == 'csv':
+			ref_file_list.append(fname)
 
 	if filename_option:
 		filename = filename_option
@@ -38,6 +44,7 @@ def home(request):
 		'filename': filename,
 		'filename_ref': filename_ref,
 		'file_list': file_list,
+		'ref_file_list': ref_file_list,
 		'compare_log': True
 		}
 	return render_to_response('home.html', params, context_instance = RequestContext(request))
@@ -91,9 +98,10 @@ def csv_data_WPS(request):
 	filename = request.GET.get('filename', '')
 	response_data = { 'data' : '' }
 
+	print("getting file [%s]" % os.path.join(REF_FOLDER, filename))
+
 	try:
 		with open(os.path.join(REF_FOLDER, filename)) as f:
-			logging.debug('getting csv file content')
 			while True:
 				line = f.readline()
 				if not line:
@@ -102,14 +110,4 @@ def csv_data_WPS(request):
 				response_data['data'] = response_data['data'] + line
 			return HttpResponse(json.dumps(response_data), mimetype='application/json')
 	except:
-		with open(os.path.join(REF_FOLDER, "log_WPS"+filename[7:])) as f:
-			logging.debug('getting csv file content')
-			while True:
-				line = f.readline()
-				if not line:
-					break
-				line = line.replace(' ms,', ',')
-				response_data['data'] = response_data['data'] + line
-			return HttpResponse(json.dumps(response_data), mimetype='application/json')
-
-	return HttpResponse('Something wrong!')
+		return HttpResponse('Something wrong!')

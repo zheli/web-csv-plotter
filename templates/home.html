@@ -31,7 +31,7 @@
     		{% if compare_log %}
     		V.S.<br>
     		<select id="filename_ref_option" name="filename_ref_option">
-    			{% for file in file_list %}
+    			{% for file in ref_file_list %}
     			<option value="{{ file }}">{{ file }}</option>
     			{% endfor %}
     		</select>
@@ -59,14 +59,14 @@
 
 			//for(var n=0; n<5; n++){				chartData.push({					number: n,					arc_current: n,		arc_voltage: n				});			}
 
-        		    function getChart(filename) {
+        		    function getChart() {
         			//alert(chartData);
         			//GET DATA
-        			$.getJSON("/csv_data?filename="+filename, function(data) {
+        			$.getJSON("/csv_data?filename={{ filename }}", function(data) {
         				
 		    			dataSets = $.csv()(data['data']);
 		    			{% if compare_log %}
-		    			$.getJSON("/csv_data_WPS?filename="+filename, function(data) {
+		    			$.getJSON("/csv_data_WPS?filename={{ filename_ref }}", function(data) {
 		    				dataSets_2 = $.csv()(data['data']);
 		    			{% endif %}
 
@@ -204,7 +204,7 @@
 
         	$(function() {
         		AmCharts.ready( function() {
-        			getChart("{{filename}}");
+        			getChart();
         		});
         	});
             // this method is called when chart is first inited as we listen for "dataUpdated" event
