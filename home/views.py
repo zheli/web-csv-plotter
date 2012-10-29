@@ -81,9 +81,9 @@ def log_view(request):
 def csv_data(request):
 	filename = request.GET.get('filename', '')
 	response_data = { 'data' : '' }
+	print("getting file [%s]" % os.path.join(DATA_FOLDER, filename))
 
 	with open(os.path.join(DATA_FOLDER, filename)) as f:
-		logging.debug('getting csv file content')
 		while True:
 			line = f.readline()
 			if not line:
