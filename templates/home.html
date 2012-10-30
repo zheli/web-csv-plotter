@@ -63,11 +63,11 @@
         		    function getChart() {
         			//alert(chartData);
         			//GET DATA
-        			$.getJSON("/csv_data?filename={{ filename }}", function(data) {
+        			$.getJSON("csv_data?filename={{ filename }}", function(data) {
         				
 		    			dataSets = $.csv()(data['data']);
 		    			{% if compare_log %}
-		    			$.getJSON("/csv_data_WPS?filename={{ filename_ref }}", function(data) {
+		    			$.getJSON("csv_data_WPS?filename={{ filename_ref }}", function(data) {
 		    				dataSets_2 = $.csv()(data['data']);
 		    			{% endif %}
 

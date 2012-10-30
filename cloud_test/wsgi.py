@@ -13,7 +13,9 @@ middleware here, or combine a Django application with an application of another
 framework.
 
 """
-import os
+import os, sys
+PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "../"))
+sys.path.append(PROJECT_DIR)
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "cloud_test.settings")
 
