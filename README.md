@@ -14,8 +14,6 @@ Prerequisites
 * Python
 * Django
 
-
-
 How to run it
 ===============
 Create a new file called config.py in the project folder (where README.md is) and add this:
@@ -36,6 +34,8 @@ Then launch it using:
 
 and visit localhost:8000 in your browser.
 
-Now it only has two functions:
-* localhost:8000			for comparing two csv files
-* localhost:8000/log_view	for checking single csv file
+###Compare Two CSV Files
+http://localhost:8000
+
+###Check Single CSV File
+http://localhost:8000/log_view
