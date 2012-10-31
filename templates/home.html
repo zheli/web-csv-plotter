@@ -26,14 +26,16 @@
     			{% for file in file_list %}
     			<option value="{{ file }}">{{ file }}</option>
     			{% endfor %}
+    			{{ selected|safe }}
     		</select>
     		filename: <input type="text" id="filename" name="filename" value="{{filename}}" size=120 /><br>
     		{% if compare_log %}
     		V.S.<br>
     		<select id="filename_ref_option" name="filename_ref_option">
-    			{% for file in ref_file_list %}
+    			{% for file in file_list_ref %}
     			<option value="{{ file }}">{{ file }}</option>
     			{% endfor %}
+    			{{ selected_ref|safe }}
     		</select>
     		reference filename: <input type="text" id="filename_ref" name="filename_ref" value="{{filename_ref}}" size=120 /><br>
     		{% endif %}
