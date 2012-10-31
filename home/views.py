@@ -6,9 +6,12 @@ from django.http import HttpResponse
 from django.template  import RequestContext
 from django.shortcuts import render_to_response
 
-SRC_PATH = os.path.join("C:\\")
-DATA_FOLDER = os.path.join(SRC_PATH, "Logfiles")
-REF_FOLDER = os.path.join(SRC_PATH, "ReferenceLogs")
+try:
+	from config import *
+except:
+	SRC_PATH = os.path.join("C:\\")
+	DATA_FOLDER = os.path.join(SRC_PATH, "Logfiles")
+	REF_FOLDER = os.path.join(SRC_PATH, "ReferenceLogs")
 
 def get_csv_filelist_in_dir(dir_path):
 	dir_path = os.listdir(dir_path) #get all the item in that folder
